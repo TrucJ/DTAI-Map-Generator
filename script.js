@@ -393,20 +393,35 @@ randomBtn.addEventListener('click', function() {
     });
   }
 
-  const prob = 0.3;
+  const prob = 0.2;
   groupArray.forEach(group => {
     if (selectedCells.hasOwnProperty(group[0])) return;
     if (Math.random() < prob) {
-      const randomType = (Math.random() < 0.5) ? "danger" : "gold";
-      let obj;
-      if (randomType === "gold") {
-        obj = { type: "gold", count: Math.floor(Math.random() * 6) + 1 };
-      } else {
-        obj = { type: "danger" };
-      }
+      obj = { type: "danger" };
       group.forEach(key => selectedCells[key] = obj);
     }
   });
+
+  // Generate gold tiles to sum up to 300
+  countGold = 0;
+  while (countGold < 300) {
+    groupArray.forEach(group => {
+      if (countGold >= 300 || group.length === 1) {
+        return;
+      }
+      if (selectedCells.hasOwnProperty(group[0]) && selectedCells[group[0]].type !== "gold") return;
+      if (Math.random() < prob) {
+        let count = 0;
+        if (selectedCells.hasOwnProperty(group[0])) {
+          count += selectedCells[group[0]].count;
+        }
+        let addedCount = Math.min(Math.round((300 - countGold) / group.length), Math.floor(Math.random() * (6 - count)) + count + 1);
+        obj = { type: "gold", count: count + addedCount };
+        group.forEach(key => selectedCells[key] = obj);
+        countGold += addedCount * group.length;
+      }
+    });
+  }
 
   drawMap();
 });

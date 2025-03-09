@@ -2,7 +2,8 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Hexmap with Responsive Canvas</title>
+    <title>Map Generator - Đấu trường AI - Thách Thức 2025</title>
+    <link rel="icon" href="logo.png" type="image/png">
     <style>
         body {
             margin: 0;
@@ -27,7 +28,7 @@
             cursor: grab;
         }
         .right-panel {
-            width: 250px;
+            width: 300px;
             padding: 20px;
             box-sizing: border-box;
             border-left: 1px solid #ccc;
@@ -104,6 +105,8 @@
             margin-left: 8px;
             font-size: 16px;
             font-weight: bold;
+            width: 50px;
+            text-align: left;
         }
         select {
             width: 60%;
@@ -117,13 +120,13 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .action-container button {
             padding: 8px 16px;
             font-size: 16px;
             cursor: pointer;
-            width: 100px; /* Đảm bảo tất cả các button có cùng độ dài */
+            width: 120px; /* Đảm bảo tất cả các button có cùng độ dài */
         }
         button:disabled {
             opacity: 0.5;

@@ -367,6 +367,7 @@ randomBtn.addEventListener('click', function() {
     let confirmed = confirm("The map will be cleared. Do you want to proceed?");
     if (!confirmed) return;
   }
+  prevSelectedCells = selectedCells;
   selectedCells = {};
   let groups = {};
   for (let q = -radius; q <= radius; q++) {
@@ -384,25 +385,37 @@ randomBtn.addEventListener('click', function() {
   }
   const groupArray = Object.values(groups);
 
-  // Chọn 1 group (có 3 phần tử) để gán Shield sao cho tổng shield = 3
-  const nonCenterGroups = groupArray.filter(g => g.length === 3);
-  if (nonCenterGroups.length > 0) {
-    const shieldGroup = nonCenterGroups[Math.floor(Math.random() * nonCenterGroups.length)];
-    shieldGroup.forEach(key => {
-      selectedCells[key] = { type: "shield" };
+  // Hold previous shield and danger tiles if gold is active
+  if (activeTile === "gold") {
+    for (let key in prevSelectedCells) {
+      const obj = prevSelectedCells[key];
+      if (obj.type === "danger" || obj.type === "shield") {
+        selectedCells[key] = obj;
+      }
+    }
+  } else {
+    // Generate shield tiles
+    const nonCenterGroups = groupArray.filter(g => g.length === 3);
+    if (nonCenterGroups.length > 0) {
+      const shieldGroup = nonCenterGroups[Math.floor(Math.random() * nonCenterGroups.length)];
+      shieldGroup.forEach(key => {
+        selectedCells[key] = { type: "shield" };
+      });
+    }
+
+    // Generate danger tiles
+    const dangerProb = 0.2;
+    groupArray.forEach(group => {
+      if (selectedCells.hasOwnProperty(group[0])) return;
+      if (Math.random() < dangerProb) {
+        obj = { type: "danger" };
+        group.forEach(key => selectedCells[key] = obj);
+      }
     });
   }
 
-  const prob = 0.2;
-  groupArray.forEach(group => {
-    if (selectedCells.hasOwnProperty(group[0])) return;
-    if (Math.random() < prob) {
-      obj = { type: "danger" };
-      group.forEach(key => selectedCells[key] = obj);
-    }
-  });
-
   // Generate gold tiles to sum up to 300
+  const goldProd = 0.2;
   countGold = 0;
   while (countGold < 300) {
     groupArray.forEach(group => {
@@ -410,7 +423,7 @@ randomBtn.addEventListener('click', function() {
         return;
       }
       if (selectedCells.hasOwnProperty(group[0]) && selectedCells[group[0]].type !== "gold") return;
-      if (Math.random() < prob) {
+      if (Math.random() < goldProd) {
         let count = 0;
         if (selectedCells.hasOwnProperty(group[0])) {
           count += selectedCells[group[0]].count;

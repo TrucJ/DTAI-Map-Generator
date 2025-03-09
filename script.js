@@ -428,7 +428,8 @@ randomBtn.addEventListener('click', function() {
         if (selectedCells.hasOwnProperty(group[0])) {
           count += selectedCells[group[0]].count;
         }
-        let addedCount = Math.min(Math.round((300 - countGold) / group.length), Math.floor(Math.random() * (6 - count)) + count + 1);
+        if (count >= 6) return;
+        let addedCount = Math.min(Math.floor((300 - countGold) / group.length), Math.floor(Math.random() * (6 - count)) + 1);
         obj = { type: "gold", count: count + addedCount };
         group.forEach(key => selectedCells[key] = obj);
         countGold += addedCount * group.length;

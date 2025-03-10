@@ -24,6 +24,7 @@ let activeTile = null;
 let offsetX = 0, offsetY = 0;
 let isDragging = false, startDragX = 0, startDragY = 0;
 let hasMoved = false;
+let touchStartDistance = null;
 
 function getCyclicKeys(cube) {
   let keys = [];
@@ -184,6 +185,32 @@ canvas.addEventListener("wheel", function(event) {
     scale /= 1.05;
   }
   drawMap();
+});
+canvas.addEventListener("touchstart", function(event) {
+  if (event.touches.length === 2) {
+    const dx = event.touches[0].clientX - event.touches[1].clientX;
+    const dy = event.touches[0].clientY - event.touches[1].clientY;
+    touchStartDistance = Math.sqrt(dx * dx + dy * dy);
+  }
+});
+canvas.addEventListener("touchmove", function(event) {
+  if (event.touches.length === 2 && touchStartDistance !== null) {
+    event.preventDefault();
+    const dx = event.touches[0].clientX - event.touches[1].clientX;
+    const dy = event.touches[0].clientY - event.touches[1].clientY;
+    const newDistance = Math.sqrt(dx * dx + dy * dy);
+
+    const scaleFactor = newDistance / touchStartDistance;
+    scale *= scaleFactor;
+    touchStartDistance = newDistance;
+
+    drawMap();
+  }
+});
+canvas.addEventListener("touchend", function(event) {
+  if (event.touches.length < 2) {
+    touchStartDistance = null;
+  }
 });
 
 function updateCanvasSize() {

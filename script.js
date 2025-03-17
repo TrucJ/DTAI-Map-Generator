@@ -359,32 +359,34 @@ clearBtn.addEventListener('click', function() {
 });
 
 const downloadBtn = document.getElementById('downloadBtn');
-downloadBtn.addEventListener('click', function() {
-  let N = cellsPerEdge;
-  let keys = Object.keys(selectedCells);
-  let C = keys.length;
-  let lines = [];
-  lines.push(N);
-  lines.push(C);
-  keys.forEach(key => {
-    let parts = key.split(",");
-    let q = parts[0], r = parts[1], s = parts[2];
+downloadBtn.addEventListener('click', function () {
+  let mapData = {
+    map_radius: radius,
+    max_moves: 100,
+    cells: []
+  };
+
+  Object.keys(selectedCells).forEach(key => {
+    let [q, r, s] = key.split(",").map(Number);
     let tile = selectedCells[key];
-    let V;
+    let value;
+
     if (tile.type === "gold") {
-      V = tile.count;
+      value = tile.count; // Gold tiles store a count
     } else if (tile.type === "danger") {
-      V = "D";
+      value = "D";
     } else if (tile.type === "shield") {
-      V = "S";
+      value = "S";
     }
-    lines.push(`${q} ${r} ${s} ${V}`);
+
+    mapData.cells.push({ q, r, s, value });
   });
-  let fileContent = lines.join("\n");
-  let blob = new Blob([fileContent], { type: "text/plain" });
+
+  let fileContent = JSON.stringify(mapData, null, 2);
+  let blob = new Blob([fileContent], { type: "application/json" });
   let a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "map.txt";
+  a.download = "map.json";
   a.click();
 });
 
@@ -469,50 +471,53 @@ randomBtn.addEventListener('click', function() {
 
 const uploadBtn = document.getElementById('uploadBtn');
 const uploadInput = document.getElementById('uploadInput');
-uploadBtn.addEventListener('click', function() {
+uploadBtn.addEventListener('click', function () {
   uploadInput.click();
 });
-uploadInput.addEventListener('change', function() {
+
+uploadInput.addEventListener('change', function () {
   if (this.files.length === 0) return;
   const file = this.files[0];
   const reader = new FileReader();
-  reader.onload = function(e) {
-    const content = e.target.result;
-    const lines = content.split(/\r?\n/);
-    if (lines.length < 2) {
-      alert("Invalid file format.");
-      return;
-    }
-    const N = parseInt(lines[0].trim());
-    if (isNaN(N)) {
-      alert("Invalid map size in file.");
-      return;
-    }
-    cellsPerEdge = N;
-    radius = cellsPerEdge - 1;
-    document.getElementById('cellCount').value = N;
-    selectedCells = {};
-    for (let i = 2; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
-      const parts = line.split(" ");
-      if (parts.length < 4) continue;
-      const q = parts[0], r = parts[1], s = parts[2], V = parts[3];
-      let obj;
-      if (V === "D") {
-        obj = { type: "danger" };
-      } else if (V === "S") {
-        obj = { type: "shield" };
-      } else {
-        const count = parseInt(V);
-        if (isNaN(count)) continue;
-        obj = { type: "gold", count: count };
+
+  reader.onload = function (e) {
+    try {
+      const mapData = JSON.parse(e.target.result);
+
+      if (!mapData.map_radius || !mapData.cells) {
+        alert("Invalid file format.");
+        return;
       }
-      const key = `${q},${r},${s}`;
-      selectedCells[key] = obj;
+
+      // Update map size
+      cellsPerEdge = mapData.map_radius + 1;
+      radius = mapData.map_radius;
+      document.getElementById('cellCount').value = cellsPerEdge;
+
+      // Clear previous selection
+      selectedCells = {};
+
+      // Load cells from file
+      mapData.cells.forEach(({ q, r, s, value }) => {
+        let obj;
+        if (value === "D") {
+          obj = { type: "danger" };
+        } else if (value === "S") {
+          obj = { type: "shield" };
+        } else if (typeof value === "number") {
+          obj = { type: "gold", count: value };
+        } else {
+          return; // Ignore invalid values
+        }
+        selectedCells[`${q},${r},${s}`] = obj;
+      });
+
+      drawMap();
+    } catch (error) {
+      alert("Error parsing file: " + error.message);
     }
-    drawMap();
   };
+
   reader.readAsText(file);
 });
 

@@ -362,13 +362,17 @@ clearBtn.addEventListener('click', function () {
       let confirmed = confirm("Are you sure you want to clear the map?");
       if (!confirmed) return;
     }
-    let newSelectedCells = {};
-    for (let key in selectedCells) {
-      if (selectedCells[key].type !== activeTile) {
-        newSelectedCells[key] = selectedCells[key];
+    if (activeTile) {
+      let newSelectedCells = {};
+      for (let key in selectedCells) {
+        if (selectedCells[key].type != activeTile) {
+          newSelectedCells[key] = selectedCells[key];
+        }
       }
+      selectedCells = newSelectedCells;
+    } else {
+      selectedCells = {}
     }
-    selectedCells = newSelectedCells;
     drawMap();
   }
 });

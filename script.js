@@ -1,6 +1,5 @@
 // --- Phần Hexmap ---
-let cellsPerEdge = parseInt(document.getElementById('cellCount').value);
-let radius = cellsPerEdge - 1;
+let radius = parseInt(document.getElementById('radius').value);
 const hexSize = 30;
 let scale = 1;
 
@@ -33,18 +32,22 @@ function getCyclicKeys(cube) {
   keys.push(`${cube.s},${cube.q},${cube.r}`);
   return [...new Set(keys)];
 }
+
 function cubeToAxial(cube) {
-  return { q: cube.q, r: cube.r };
+  return {q: cube.q, r: cube.r};
 }
+
 function axialToPixel(axial) {
   const size = hexSize * scale;
   const x = size * Math.sqrt(3) * (axial.q + axial.r / 2);
-  const y = size * 3/2 * axial.r;
-  return { x, y };
+  const y = size * 3 / 2 * axial.r;
+  return {x, y};
 }
+
 function cubeToPixel(cube) {
   return axialToPixel(cubeToAxial(cube));
 }
+
 function getHexCornerCoords(cx, cy) {
   const corners = [];
   const size = hexSize * scale;
@@ -58,6 +61,7 @@ function getHexCornerCoords(cx, cy) {
   }
   return corners;
 }
+
 function drawHex(cx, cy, label, fillColor) {
   const corners = getHexCornerCoords(cx, cy);
   ctx.beginPath();
@@ -79,6 +83,7 @@ function drawHex(cx, cy, label, fillColor) {
     ctx.fillText(label, cx, cy);
   }
 }
+
 function drawMap() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let q = -radius; q <= radius; q++) {
@@ -86,7 +91,7 @@ function drawMap() {
     const r2 = Math.min(radius, -q + radius);
     for (let r = r1; r <= r2; r++) {
       const s = -q - r;
-      const cube = { q, r, s };
+      const cube = {q, r, s};
       const pixel = cubeToPixel(cube);
       const px = pixel.x + centerX + offsetX;
       const py = pixel.y + centerY + offsetY;
@@ -117,16 +122,19 @@ function drawMap() {
   }
   updateCounts();
 }
+
 function pixelToAxial(px, py) {
   const x = px - centerX - offsetX;
   const y = py - centerY - offsetY;
-  const q = (Math.sqrt(3)/3 * x - 1/3 * y) / (hexSize * scale);
-  const r = (2/3 * y) / (hexSize * scale);
-  return { q, r };
+  const q = (Math.sqrt(3) / 3 * x - 1 / 3 * y) / (hexSize * scale);
+  const r = (2 / 3 * y) / (hexSize * scale);
+  return {q, r};
 }
+
 function axialToCube(axial) {
-  return { q: axial.q, r: axial.r, s: -axial.q - axial.r };
+  return {q: axial.q, r: axial.r, s: -axial.q - axial.r};
 }
+
 function cubeRound(cube) {
   let rq = Math.round(cube.q);
   let rr = Math.round(cube.r);
@@ -141,21 +149,23 @@ function cubeRound(cube) {
   } else {
     rs = -rq - rr;
   }
-  return { q: rq, r: rr, s: rs };
+  return {q: rq, r: rr, s: rs};
 }
+
 function pixelToCube(px, py) {
   const axial = pixelToAxial(px, py);
   const cube = axialToCube(axial);
   return cubeRound(cube);
 }
-canvas.addEventListener("mousedown", function(event) {
+
+canvas.addEventListener("mousedown", function (event) {
   isDragging = true;
   hasMoved = false;
   startDragX = event.clientX;
   startDragY = event.clientY;
   canvas.style.cursor = "grabbing";
 });
-canvas.addEventListener("mousemove", function(event) {
+canvas.addEventListener("mousemove", function (event) {
   if (isDragging) {
     const dx = event.clientX - startDragX;
     const dy = event.clientY - startDragY;
@@ -169,15 +179,15 @@ canvas.addEventListener("mousemove", function(event) {
     drawMap();
   }
 });
-canvas.addEventListener("mouseup", function() {
+canvas.addEventListener("mouseup", function () {
   isDragging = false;
   canvas.style.cursor = "grab";
 });
-canvas.addEventListener("mouseleave", function() {
+canvas.addEventListener("mouseleave", function () {
   isDragging = false;
   canvas.style.cursor = "grab";
 });
-canvas.addEventListener("wheel", function(event) {
+canvas.addEventListener("wheel", function (event) {
   event.preventDefault();
   if (event.deltaY < 0) {
     scale *= 1.05;
@@ -186,14 +196,14 @@ canvas.addEventListener("wheel", function(event) {
   }
   drawMap();
 });
-canvas.addEventListener("touchstart", function(event) {
+canvas.addEventListener("touchstart", function (event) {
   if (event.touches.length === 2) {
     const dx = event.touches[0].clientX - event.touches[1].clientX;
     const dy = event.touches[0].clientY - event.touches[1].clientY;
     touchStartDistance = Math.sqrt(dx * dx + dy * dy);
   }
 });
-canvas.addEventListener("touchmove", function(event) {
+canvas.addEventListener("touchmove", function (event) {
   if (event.touches.length === 2 && touchStartDistance !== null) {
     event.preventDefault();
     const dx = event.touches[0].clientX - event.touches[1].clientX;
@@ -207,7 +217,7 @@ canvas.addEventListener("touchmove", function(event) {
     drawMap();
   }
 });
-canvas.addEventListener("touchend", function(event) {
+canvas.addEventListener("touchend", function (event) {
   if (event.touches.length < 2) {
     touchStartDistance = null;
   }
@@ -238,7 +248,7 @@ function updateCanvasSize() {
 window.addEventListener('load', updateCanvasSize);
 window.addEventListener('resize', updateCanvasSize);
 
-canvas.addEventListener("click", function(event) {
+canvas.addEventListener("click", function (event) {
   if (hasMoved) return;
   const rect = canvas.getBoundingClientRect();
   const clickX = event.clientX - rect.left;
@@ -251,12 +261,12 @@ canvas.addEventListener("click", function(event) {
       if (selectedCells[keys[0]] && selectedCells[keys[0]].type === activeTile) {
         keys.forEach(key => delete selectedCells[key]);
       } else {
-        const obj = { type: activeTile };
+        const obj = {type: activeTile};
         keys.forEach(key => selectedCells[key] = obj);
       }
     } else if (activeTile === "gold") {
       if (!selectedCells[keys[0]] || selectedCells[keys[0]].type !== "gold") {
-        const obj = { type: "gold", count: 1 };
+        const obj = {type: "gold", count: 1};
         keys.forEach(key => selectedCells[key] = obj);
       } else {
         let newCount = selectedCells[keys[0]].count + 1;
@@ -272,25 +282,25 @@ canvas.addEventListener("click", function(event) {
   }
 });
 
-document.addEventListener("keydown", function(event) {
+document.addEventListener("keydown", function (event) {
   // Lấy phím được nhấn dưới dạng chữ thường
   const key = event.key.toLowerCase();
-  if(key === "d" || key === "s" || key === "g") {
+  if (key === "d" || key === "s" || key === "g") {
     // Chuyển đổi phím sang tile type
     let tileType = "";
-    if(key === "d") tileType = "danger";
-    else if(key === "s") tileType = "shield";
-    else if(key === "g") tileType = "gold";
+    if (key === "d") tileType = "danger";
+    else if (key === "s") tileType = "shield";
+    else if (key === "g") tileType = "gold";
 
     // Nếu tile đang active đã trùng với tileType, thì unactive (tắt active)
-    if(activeTile === tileType) {
+    if (activeTile === tileType) {
       tileWrappers.forEach(wrapper => wrapper.classList.remove('active'));
       activeTile = null;
     } else {
       // Ngược lại, tắt active của các nút khác và active nút tương ứng
       tileWrappers.forEach(wrapper => {
         wrapper.classList.remove('active');
-        if(wrapper.getAttribute("data-tile") === tileType) {
+        if (wrapper.getAttribute("data-tile") === tileType) {
           wrapper.classList.add('active');
         }
       });
@@ -299,22 +309,21 @@ document.addEventListener("keydown", function(event) {
   }
 });
 
-let prevCellsPerEdge = cellsPerEdge;
+let prevRadius = radius;
 const confirmCheckbox = document.getElementById('confirmCheckbox');
-document.getElementById('cellCount').addEventListener('change', function() {
-  let newCellsPerEdge = parseInt(this.value);
+document.getElementById('radius').addEventListener('change', function () {
+  let newRadius = parseInt(this.value);
 
   // Nếu map size mới nhỏ hơn map size cũ và checkbox "Ask before clear" được chọn
-  if (newCellsPerEdge < prevCellsPerEdge && confirmCheckbox.checked && Object.keys(selectedCells).length > 0) {
+  if (newRadius < prevRadius && confirmCheckbox.checked && Object.keys(selectedCells).length > 0) {
     let confirmed = confirm("Changing the map size will remove cells outside the new boundaries. Do you want to proceed?");
     if (!confirmed) {
-      this.value = prevCellsPerEdge;
+      this.value = prevRadius;
       return;
     }
   }
   // Cập nhật map size
-  cellsPerEdge = newCellsPerEdge;
-  radius = cellsPerEdge - 1;
+  radius = newRadius;
 
   // Lọc lại các ô đã có, chỉ giữ lại những ô nằm trong vùng mới
   let newSelectedCells = {};
@@ -328,13 +337,13 @@ document.getElementById('cellCount').addEventListener('change', function() {
     }
   }
   selectedCells = newSelectedCells;
-  prevCellsPerEdge = cellsPerEdge;
+  prevRadius = radius;
   drawMap();
 });
 
 const tileWrappers = document.querySelectorAll('.tile-button-wrapper');
 tileWrappers.forEach(wrapper => {
-  wrapper.addEventListener('click', function() {
+  wrapper.addEventListener('click', function () {
     if (this.classList.contains('active')) {
       this.classList.remove('active');
       activeTile = null;
@@ -347,7 +356,7 @@ tileWrappers.forEach(wrapper => {
 });
 
 const clearBtn = document.getElementById('clearBtn');
-clearBtn.addEventListener('click', function() {
+clearBtn.addEventListener('click', function () {
   if (Object.keys(selectedCells).length > 0) {
     if (confirmCheckbox.checked) {
       let confirmed = confirm("Are you sure you want to clear the map?");
@@ -379,11 +388,11 @@ downloadBtn.addEventListener('click', function () {
       value = "S";
     }
 
-    mapData.cells.push({ q, r, s, value });
+    mapData.cells.push({q, r, s, value});
   });
 
   let fileContent = JSON.stringify(mapData, null, 2);
-  let blob = new Blob([fileContent], { type: "application/json" });
+  let blob = new Blob([fileContent], {type: "application/json"});
   let a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "map.json";
@@ -391,7 +400,7 @@ downloadBtn.addEventListener('click', function () {
 });
 
 const randomBtn = document.getElementById('randomBtn');
-randomBtn.addEventListener('click', function() {
+randomBtn.addEventListener('click', function () {
   if (confirmCheckbox.checked && Object.keys(selectedCells).length > 0) {
     let confirmed = confirm("The map will be cleared. Do you want to proceed?");
     if (!confirmed) return;
@@ -404,7 +413,7 @@ randomBtn.addEventListener('click', function() {
     const r2 = Math.min(radius, -q + radius);
     for (let r = r1; r <= r2; r++) {
       const s = -q - r;
-      const cube = { q, r, s };
+      const cube = {q, r, s};
       const keys = getCyclicKeys(cube);
       let canonical = keys.slice().sort().join("|");
       if (!(canonical in groups)) {
@@ -415,55 +424,161 @@ randomBtn.addEventListener('click', function() {
   const groupArray = Object.values(groups);
 
   // Hold previous shield and danger tiles if gold is active
-  if (activeTile === "gold") {
+  if (activeTile === "danger") {
+    generateDanger();
+  } else if (activeTile === "shield") {
     for (let key in prevSelectedCells) {
       const obj = prevSelectedCells[key];
-      if (obj.type === "danger" || obj.type === "shield") {
+      if (obj.type === "danger") {
         selectedCells[key] = obj;
       }
     }
+    generateShield();
+  } else if (activeTile === "gold") {
+    for (let key in prevSelectedCells) {
+      const obj = prevSelectedCells[key];
+      if (obj.type === "danger") {
+        selectedCells[key] = obj;
+      }
+    }
+    for (let key in prevSelectedCells) {
+      const obj = prevSelectedCells[key];
+      if (obj.type === "shield") {
+        selectedCells[key] = obj;
+      }
+    }
+    generateGold();
   } else {
-    // Generate shield tiles
-    const nonCenterGroups = groupArray.filter(g => g.length === 3);
-    if (nonCenterGroups.length > 0) {
-      const shieldGroup = nonCenterGroups[Math.floor(Math.random() * nonCenterGroups.length)];
-      shieldGroup.forEach(key => {
-        selectedCells[key] = { type: "shield" };
+    generateDanger();
+    generateShield();
+    generateGold();
+  }
+
+  // Generate danger tiles
+  function generateDanger() {
+    const dangerCells = new Set();
+    for (let i = 0; i < 10; i++) {
+      const dangerProb = Math.floor(Math.random() * 0.6) + 0.2;
+      groupArray.forEach(group => {
+        if (Math.random() < dangerProb) {
+          group.forEach(key => dangerCells.add(key));
+        }
       });
+      if (validateDanger(dangerCells)) {
+        break;
+      }
+      dangerCells.clear();
+    }
+    console.log(dangerCells);
+    dangerCells.forEach(key => selectedCells[key] = {type: "danger"});
+
+    // Check if the danger tiles are valid
+    function validateDanger(dangerCells) {
+      return checkConnected(dangerCells);
     }
 
-    // Generate danger tiles
-    const dangerProb = 0.2;
-    groupArray.forEach(group => {
-      if (selectedCells.hasOwnProperty(group[0])) return;
-      if (Math.random() < dangerProb) {
-        obj = { type: "danger" };
-        group.forEach(key => selectedCells[key] = obj);
+    // Using BFS to check if there are any two non-danger tiles that are not connected
+    function checkConnected(dangerCells) {
+      const directions = [
+        {q: 1, r: -1, s: 0}, {q: 1, r: 0, s: -1}, {q: 0, r: 1, s: -1},
+        {q: -1, r: 1, s: 0}, {q: -1, r: 0, s: 1}, {q: 0, r: -1, s: 1}
+      ];
+
+      function getNeighbors(cube) {
+        return directions.map(dir => {
+          const neighbor = {q: cube.q + dir.q, r: cube.r + dir.r, s: cube.s + dir.s};
+          if (Math.max(Math.abs(neighbor.q), Math.abs(neighbor.r), Math.abs(neighbor.s)) <= radius) {
+            return `${neighbor.q},${neighbor.r},${neighbor.s}`;
+          }
+          return null;
+        }).filter(key => key !== null);
       }
-    });
+
+      const visited = new Set();
+      const queue = [];
+
+      // Find the first non-danger tile to start BFS
+      for (let q = -radius; q <= radius; q++) {
+        const r1 = Math.max(-radius, -q - radius);
+        const r2 = Math.min(radius, -q + radius);
+        oke = false;
+        for (let r = r1; r <= r2; r++) {
+          const s = -q - r;
+          const key = `${q},${r},${s}`;
+          if (!dangerCells.has(key)) {
+            queue.push(key);
+            visited.add(key);
+            oke = true;
+            break;
+          }
+        }
+        if (oke) break;
+      }
+
+      while (queue.length > 0) {
+        const currentKey = queue.shift();
+        const [q, r, s] = currentKey.split(",").map(Number);
+        const currentCube = {q, r, s};
+        const neighbors = getNeighbors(currentCube);
+        for (let neighbor of neighbors) {
+          if (!visited.has(neighbor) && !dangerCells.has(neighbor)) {
+            visited.add(neighbor);
+            queue.push(neighbor);
+          }
+        }
+      }
+
+      // Check if all non-danger tiles are visited
+      for (let q = -radius; q <= radius; q++) {
+        const r1 = Math.max(-radius, -q - radius);
+        const r2 = Math.min(radius, -q + radius);
+        for (let r = r1; r <= r2; r++) {
+          const s = -q - r;
+          const key = `${q},${r},${s}`;
+          if (!dangerCells.has(key) && !visited.has(key)) {
+            return false; // Found a non-danger tile that is not connected
+          }
+        }
+      }
+
+      return true; // All non-danger tiles are connected
+    }
+  }
+
+  // Generate shield tiles
+  function generateShield() {
+    const shieldAvailableGroups = groupArray.filter(g => g.length === 3 && !selectedCells.hasOwnProperty(g[0]));
+    if (shieldAvailableGroups.length > 0) {
+      const shieldGroup = shieldAvailableGroups[Math.floor(Math.random() * shieldAvailableGroups.length)];
+      shieldGroup.forEach(key => {
+        selectedCells[key] = {type: "shield"};
+      });
+    }
   }
 
   // Generate gold tiles to sum up to 300
-  const goldProd = 0.2;
-  countGold = 0;
-  while (countGold < 300) {
-    groupArray.forEach(group => {
-      if (countGold >= 300 || group.length === 1) {
-        return;
-      }
-      if (selectedCells.hasOwnProperty(group[0]) && selectedCells[group[0]].type !== "gold") return;
-      if (Math.random() < goldProd) {
-        let count = 0;
-        if (selectedCells.hasOwnProperty(group[0])) {
-          count += selectedCells[group[0]].count;
+  function generateGold() {
+    const goldProd = 0.2;
+    countGold = 0;
+    while (countGold < 300) {
+      groupArray.forEach(group => {
+        if (countGold >= 300 || group.length === 1) {
+          return;
         }
-        if (count >= 6) return;
-        let addedCount = Math.min(Math.floor((300 - countGold) / group.length), Math.floor(Math.random() * (6 - count)) + 1);
-        obj = { type: "gold", count: count + addedCount };
-        group.forEach(key => selectedCells[key] = obj);
-        countGold += addedCount * group.length;
-      }
-    });
+        if (selectedCells.hasOwnProperty(group[0]) && selectedCells[group[0]].type !== "gold") return;
+        if (Math.random() < goldProd) {
+          let count = 0;
+          if (selectedCells.hasOwnProperty(group[0])) {
+            count += selectedCells[group[0]].count;
+          }
+          if (count >= 6) return;
+          let addedCount = Math.min(Math.floor((300 - countGold) / group.length), Math.floor(Math.random() * (6 - count)) + 1);
+          obj = {type: "gold", count: count + addedCount};
+          group.forEach(key => selectedCells[key] = obj);
+          countGold += addedCount * group.length;
+        }
+      });
+    }
   }
 
   drawMap();
@@ -490,22 +605,21 @@ uploadInput.addEventListener('change', function () {
       }
 
       // Update map size
-      cellsPerEdge = mapData.map_radius + 1;
       radius = mapData.map_radius;
-      document.getElementById('cellCount').value = cellsPerEdge;
+      document.getElementById('radius').value = radius;
 
       // Clear previous selection
       selectedCells = {};
 
       // Load cells from file
-      mapData.cells.forEach(({ q, r, s, value }) => {
+      mapData.cells.forEach(({q, r, s, value}) => {
         let obj;
         if (value === "D") {
-          obj = { type: "danger" };
+          obj = {type: "danger"};
         } else if (value === "S") {
-          obj = { type: "shield" };
+          obj = {type: "shield"};
         } else if (typeof value === "number") {
-          obj = { type: "gold", count: value };
+          obj = {type: "gold", count: value};
         } else {
           return; // Ignore invalid values
         }

@@ -34,12 +34,16 @@ function drawHex(cx, cy, label, fillColor) {
     ctx.fill();
   }
   ctx.stroke();
+
   if (label) {
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "black";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(label, cx, cy);
+    const fontSize = 16 * scale;
+    if (fontSize > 6) {
+      ctx.font = `bold ${fontSize}px Arial`;
+      ctx.fillStyle = "black";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(label, cx, cy);
+    }
   }
 }
 

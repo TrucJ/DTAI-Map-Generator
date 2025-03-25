@@ -3,7 +3,7 @@
 
 // Các biến cấu hình ban đầu
 let radius = parseInt(document.getElementById('radius').value);
-const hexSize = 30;
+const hexSize = 24;
 let scale = 1;
 let selectedCells = {};
 let activeTile = null;

@@ -16,7 +16,12 @@ let touchStartDistance = null;
 const tileColors = {
   danger: "red",
   shield: "skyblue",
-  gold: "yellow"
+  gold1: "#FFFF66",
+  gold2: "#FFFF44",
+  gold3: "#FFFF22",
+  gold4: "#FFFF00",
+  gold5: "#FFEE00",
+  gold6: "#FFDD00",
 };
 const tileLabels = {
   danger: "D",

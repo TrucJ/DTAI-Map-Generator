@@ -53,14 +53,14 @@ function getCyclicKeys(cube) {
 }
 
 function cubeToAxial(cube) {
-  return { q: cube.q, r: cube.r };
+  return {q: cube.q, r: cube.r};
 }
 
 function axialToPixel(axial) {
   const size = hexSize * scale;
   const x = size * Math.sqrt(3) * (axial.q + axial.r / 2);
   const y = size * 3 / 2 * axial.r;
-  return { x, y };
+  return {x, y};
 }
 
 function cubeToPixel(cube) {
@@ -72,11 +72,11 @@ function pixelToAxial(px, py) {
   const y = py - centerY - offsetY;
   const q = (Math.sqrt(3) / 3 * x - 1 / 3 * y) / (hexSize * scale);
   const r = (2 / 3 * y) / (hexSize * scale);
-  return { q, r };
+  return {q, r};
 }
 
 function axialToCube(axial) {
-  return { q: axial.q, r: axial.r, s: -axial.q - axial.r };
+  return {q: axial.q, r: axial.r, s: -axial.q - axial.r};
 }
 
 function cubeRound(cube) {
@@ -93,7 +93,7 @@ function cubeRound(cube) {
   } else {
     rs = -rq - rr;
   }
-  return { q: rq, r: rr, s: rs };
+  return {q: rq, r: rr, s: rs};
 }
 
 function pixelToCube(px, py) {
@@ -110,7 +110,7 @@ function drawMap() {
     const r2 = Math.min(radius, -q + radius);
     for (let r = r1; r <= r2; r++) {
       const s = -q - r;
-      const cube = { q, r, s };
+      const cube = {q, r, s};
       const pixel = cubeToPixel(cube);
       const px = pixel.x + centerX + offsetX;
       const py = pixel.y + centerY + offsetY;
@@ -124,7 +124,10 @@ function drawMap() {
         } else {
           label = tileLabels[tileObj.type];
         }
-        fillColor = tileColors[tileObj.type];
+        if (tileObj.type === "gold") {
+          fillColor = tileColors[`${tileObj.type}${tileObj.count}`];
+        } else
+          fillColor = tileColors[tileObj.type];
       } else {
         if (q > 0 && r < 0) {
           fillColor = "mistyrose";
@@ -241,12 +244,12 @@ canvas.addEventListener("click", function (event) {
       if (selectedCells[keys[0]] && selectedCells[keys[0]].type === activeTile) {
         keys.forEach(key => delete selectedCells[key]);
       } else {
-        const obj = { type: activeTile };
+        const obj = {type: activeTile};
         keys.forEach(key => selectedCells[key] = obj);
       }
     } else if (activeTile === "gold") {
       if (!selectedCells[keys[0]] || selectedCells[keys[0]].type !== "gold") {
-        const obj = { type: "gold", count: 1 };
+        const obj = {type: "gold", count: 1};
         keys.forEach(key => selectedCells[key] = obj);
       } else {
         let newCount = selectedCells[keys[0]].count + 1;

@@ -110,10 +110,10 @@ downloadBtn.addEventListener('click', function () {
     } else if (tile.type === "shield") {
       value = "S";
     }
-    mapData.cells.push({ q, r, s, value });
+    mapData.cells.push({q, r, s, value});
   });
   let fileContent = JSON.stringify(mapData, null, 2);
-  let blob = new Blob([fileContent], { type: "application/json" });
+  let blob = new Blob([fileContent], {type: "application/json"});
   let a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "map.json";
@@ -135,7 +135,7 @@ randomBtn.addEventListener('click', function () {
     const r2 = Math.min(radius, -q + radius);
     for (let r = r1; r <= r2; r++) {
       const s = -q - r;
-      const cube = { q, r, s };
+      const cube = {q, r, s};
       const keys = getCyclicKeys(cube);
       let canonical = keys.slice().sort().join("|");
       if (!(canonical in groups)) {
@@ -189,28 +189,32 @@ randomBtn.addEventListener('click', function () {
       }
       dangerCells.clear();
     }
-    dangerCells.forEach(key => selectedCells[key] = { type: "danger" });
+    dangerCells.forEach(key => selectedCells[key] = {type: "danger"});
+
     function validateDanger(dangerCells) {
       return checkConnected(dangerCells);
     }
+
     function checkConnected(dangerCells) {
       const directions = [
-        { q: 1, r: -1, s: 0 },
-        { q: 1, r: 0, s: -1 },
-        { q: 0, r: 1, s: -1 },
-        { q: -1, r: 1, s: 0 },
-        { q: -1, r: 0, s: 1 },
-        { q: 0, r: -1, s: 1 }
+        {q: 1, r: -1, s: 0},
+        {q: 1, r: 0, s: -1},
+        {q: 0, r: 1, s: -1},
+        {q: -1, r: 1, s: 0},
+        {q: -1, r: 0, s: 1},
+        {q: 0, r: -1, s: 1}
       ];
+
       function getNeighbors(cube) {
         return directions.map(dir => {
-          const neighbor = { q: cube.q + dir.q, r: cube.r + dir.r, s: cube.s + dir.s };
+          const neighbor = {q: cube.q + dir.q, r: cube.r + dir.r, s: cube.s + dir.s};
           if (Math.max(Math.abs(neighbor.q), Math.abs(neighbor.r), Math.abs(neighbor.s)) <= radius) {
             return `${neighbor.q},${neighbor.r},${neighbor.s}`;
           }
           return null;
         }).filter(key => key !== null);
       }
+
       const visited = new Set();
       const queue = [];
       for (let q = -radius; q <= radius; q++) {
@@ -232,7 +236,7 @@ randomBtn.addEventListener('click', function () {
       while (queue.length > 0) {
         const currentKey = queue.shift();
         const [q, r, s] = currentKey.split(",").map(Number);
-        const currentCube = { q, r, s };
+        const currentCube = {q, r, s};
         const neighbors = getNeighbors(currentCube);
         for (let neighbor of neighbors) {
           if (!visited.has(neighbor) && !dangerCells.has(neighbor)) {
@@ -262,7 +266,7 @@ randomBtn.addEventListener('click', function () {
     if (shieldAvailableGroups.length > 0) {
       const shieldGroup = shieldAvailableGroups[Math.floor(Math.random() * shieldAvailableGroups.length)];
       shieldGroup.forEach(key => {
-        selectedCells[key] = { type: "shield" };
+        selectedCells[key] = {type: "shield"};
       });
     }
   }
@@ -272,25 +276,25 @@ randomBtn.addEventListener('click', function () {
     const goldProd = 0.2;
     let countGold = 0;
     while (countGold < 300) {
-      groupArray.forEach(group => {
-        if (countGold >= 300 || group.length === 1) {
-          return;
-        }
-        if (selectedCells.hasOwnProperty(group[0]) && selectedCells[group[0]].type !== "gold") return;
-        if (Math.random() < goldProd) {
-          let count = 0;
-          if (selectedCells.hasOwnProperty(group[0])) {
-            count += selectedCells[group[0]].count;
-          }
-          if (count >= 6) return;
-          let addedCount = Math.min(Math.floor((300 - countGold) / group.length), Math.floor(Math.random() * (6 - count)) + 1);
-          let obj = { type: "gold", count: count + addedCount };
-          group.forEach(key => selectedCells[key] = obj);
-          countGold += addedCount * group.length;
-        }
-      });
+      const group = groupArray[Math.floor(Math.random() * groupArray.length)];
+      if (countGold >= 300) {
+        return;
+      }
+      if (selectedCells.hasOwnProperty(group[0]) && selectedCells[group[0]].type !== "gold") continue;
+      let count = 0;
+      if (selectedCells.hasOwnProperty(group[0])) {
+        count += selectedCells[group[0]].count;
+      }
+      if (count >= 6) continue;
+      let addedCount = Math.min(Math.round((300 - countGold) / 3), 6 - count, Math.round(Math.random() * 2) + 1);
+      if (group.length === 1) {
+        addedCount = Math.min(300 - countGold, 6 - count, 3);
+      }
+      group.forEach(key => selectedCells[key] = {type: "gold", count: count + addedCount});
+      countGold += addedCount * group.length;
     }
   }
+
   drawMap();
 });
 
@@ -314,14 +318,14 @@ uploadInput.addEventListener('change', function () {
       radius = mapData.map_radius;
       document.getElementById('radius').value = radius;
       selectedCells = {};
-      mapData.cells.forEach(({ q, r, s, value }) => {
+      mapData.cells.forEach(({q, r, s, value}) => {
         let obj;
         if (value === "D") {
-          obj = { type: "danger" };
+          obj = {type: "danger"};
         } else if (value === "S") {
-          obj = { type: "shield" };
+          obj = {type: "shield"};
         } else if (typeof value === "number") {
-          obj = { type: "gold", count: value };
+          obj = {type: "gold", count: value};
         } else {
           return;
         }

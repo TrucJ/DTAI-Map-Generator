@@ -21,7 +21,7 @@ canvas {
     cursor: grab;
 }
 .right-panel {
-    width: 300px;
+    width: 270px;
     padding: 20px;
     box-sizing: border-box;
     border-left: 1px solid #ccc;

@@ -16,7 +16,6 @@
     <div class="right-panel">
         <h2>Control Panel</h2>
 
-        <!-- Hàng 1: Map size -->
         <div class="control-group" id="map-size-group">
             <label for="radius">Radius:</label>
             <select id="radius">
@@ -31,7 +30,11 @@
             </select>
         </div>
 
-        <!-- Hàng 2: Danger control -->
+        <div class="control-group" id="move-group">
+            <label for="move">Moves:</label>
+            <input id="move" type="number" min="50" max="150" value="100" step="10">
+        </div>
+
         <div class="control-group">
             <div class="tile-container">
                 <div class="tile-button-wrapper tile-danger" data-tile="danger">
@@ -41,7 +44,6 @@
             </div>
         </div>
 
-        <!-- Hàng 3: Shield control -->
         <div class="control-group">
             <div class="tile-container">
                 <div class="tile-button-wrapper tile-shield" data-tile="shield">
@@ -51,7 +53,6 @@
             </div>
         </div>
 
-        <!-- Hàng 4: Gold control -->
         <div class="control-group">
             <div class="tile-container">
                 <div class="tile-button-wrapper tile-gold" data-tile="gold">
@@ -61,7 +62,6 @@
             </div>
         </div>
 
-        <!-- Hàng 5: Checkbox confirm -->
         <div class="control-group" id="confirm-group">
             <label>
                 <input type="checkbox" id="confirmCheckbox" checked>
@@ -69,20 +69,17 @@
             </label>
         </div>
 
-        <!-- Hàng 6: Clear and Random buttons -->
         <div class="control-group action-container">
             <button id="clearBtn" disabled>Clear</button>
             <button id="randomBtn">Random</button>
         </div>
 
-        <!-- Hàng 7: Download and Upload buttons -->
         <div class="control-group action-container">
             <button id="downloadBtn">Download</button>
             <button id="uploadBtn">Upload</button>
             <input type="file" id="uploadInput" style="display: none;" accept=".json">
         </div>
 
-        <!-- Liên kết -->
         <div class="footer-links">
             <a href="https://dtai-visualizer.vercel.app/" target="_blank">
                 <img src="logo.png" alt="DTAI Map Generator" class="footer-icon">

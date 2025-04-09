@@ -53,6 +53,15 @@ document.getElementById('radius').addEventListener('change', function () {
   drawMap();
 });
 
+// Xử lý thay đổi số bước tối đa
+document.getElementById('move').addEventListener('change', function () {
+  move = parseInt(this.value);
+  if (move < 0) {
+    this.value = 0;
+    move = 0;
+  }
+});
+
 // Xử lý các nút chuyển đổi tile (dựa vào phần tử HTML có class .tile-button-wrapper)
 const tileWrappers = document.querySelectorAll('.tile-button-wrapper');
 tileWrappers.forEach(wrapper => {
@@ -96,7 +105,7 @@ const downloadBtn = document.getElementById('downloadBtn');
 downloadBtn.addEventListener('click', function () {
   let mapData = {
     map_radius: radius,
-    max_moves: 100,
+    max_moves: move,
     cells: []
   };
   Object.keys(selectedCells).forEach(key => {
@@ -315,8 +324,11 @@ uploadInput.addEventListener('change', function () {
         alert("Invalid file format.");
         return;
       }
+      console.log(mapData.map_radius, mapData.max_moves)
       radius = mapData.map_radius;
       document.getElementById('radius').value = radius;
+      move = mapData.max_moves || 100;
+      document.getElementById('move').value = move;
       selectedCells = {};
       mapData.cells.forEach(({q, r, s, value}) => {
         let obj;

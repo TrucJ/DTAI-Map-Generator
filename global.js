@@ -2,6 +2,7 @@
 // Các biến và cấu hình toàn cục dùng cho toàn bộ project
 
 // Các biến cấu hình ban đầu
+let mapName = parseInt(document.getElementById('map-name').value);
 let radius = parseInt(document.getElementById('radius').value);
 let move = parseInt(document.getElementById('move').value);
 const hexSize = 24;

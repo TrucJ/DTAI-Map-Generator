@@ -62,6 +62,11 @@ document.getElementById('move').addEventListener('change', function () {
   }
 });
 
+// Xử lý thay đổi map name
+document.getElementById('map-name').addEventListener('change', function () {
+  mapName = this.value;
+});
+
 // Xử lý các nút chuyển đổi tile (dựa vào phần tử HTML có class .tile-button-wrapper)
 const tileWrappers = document.querySelectorAll('.tile-button-wrapper');
 tileWrappers.forEach(wrapper => {
@@ -125,7 +130,7 @@ downloadBtn.addEventListener('click', function () {
   let blob = new Blob([fileContent], {type: "application/json"});
   let a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "map.json";
+  a.download = mapName || "map.json";
   a.click();
 });
 
@@ -324,11 +329,12 @@ uploadInput.addEventListener('change', function () {
         alert("Invalid file format.");
         return;
       }
-      console.log(mapData.map_radius, mapData.max_moves)
       radius = mapData.map_radius;
       document.getElementById('radius').value = radius;
       move = mapData.max_moves || 100;
       document.getElementById('move').value = move;
+      mapName = file.name;
+      document.getElementById('map-name').value = mapName;
       selectedCells = {};
       mapData.cells.forEach(({q, r, s, value}) => {
         let obj;
